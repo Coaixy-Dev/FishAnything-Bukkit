@@ -3,11 +3,8 @@ package com.puddingkc;
 import com.puddingkc.commands.ReloadConfig;
 import com.puddingkc.listeners.FishingListener;
 import com.puddingkc.listeners.GiveItemListener;
-import com.puddingkc.listeners.WorldGenerate;
-import org.bukkit.Bukkit;
+import com.puddingkc.listeners.Platform;
 import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -30,7 +27,7 @@ public class FishAnything extends JavaPlugin {
         loadConfig();
         getServer().getPluginManager().registerEvents(new FishingListener(this), this);
         getServer().getPluginManager().registerEvents(new GiveItemListener(this), this);
-        getServer().getPluginManager().registerEvents(new WorldGenerate(this), this);
+        getServer().getPluginManager().registerEvents(new Platform(this), this);
         Objects.requireNonNull(getCommand("fishanything")).setExecutor(new ReloadConfig(this));
 
         getLogger().info("插件启用成功，作者QQ:3116078709");

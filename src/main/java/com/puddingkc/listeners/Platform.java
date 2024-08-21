@@ -1,7 +1,6 @@
 package com.puddingkc.listeners;
 
 import com.puddingkc.FishAnything;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -14,8 +13,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -25,12 +22,12 @@ import java.util.Random;
  */
 
 
-public class WorldGenerate implements Listener {
+public class Platform implements Listener {
     private final FishAnything plugin;
     // 平台默认高度
     private final int y = 10;
 
-    public WorldGenerate(FishAnything plugin) {
+    public Platform(FishAnything plugin) {
         this.plugin = plugin;
     }
 
@@ -65,10 +62,60 @@ public class WorldGenerate implements Listener {
         BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {
-                player.teleport(new Location(player.getWorld(), x, y + 2, z));
+                safeTeleport(player, new Location(player.getWorld(), x, y, z), 10);
             }
         };
         runnable.runTaskLater(plugin, 5);
+    }
+
+    public boolean isSafeLocation(Location loc) {
+        Block block = loc.getBlock();
+        Block blockAbove = block.getRelative(0, 1, 0);
+        Block blockBelow = block.getRelative(0, -1, 0);
+
+        // 检查玩家站立的位置是否安全（例如，方块不为空气）
+        if (block.getType() != Material.AIR) {
+            return false;
+        }
+
+        // 检查头部位置是否安全
+        if (blockAbove.getType() != Material.AIR) {
+            return false;
+        }
+
+        // 检查脚下的位置是否有固体方块
+        return blockBelow.getType().isSolid();
+    }
+
+    public boolean safeTeleport(Player player, Location targetLocation, int maxHeightOffset) {
+        Location safeLocation = findSafeLocation(targetLocation, maxHeightOffset);
+        player.teleport(safeLocation);
+        return true;
+    }
+
+    public Location findSafeLocation(Location originalLocation, int maxHeightOffset) {
+        Location safeLocation = originalLocation.clone();
+
+        // 向左搜索安全地点
+        for (int i = 0; i <= maxHeightOffset; i++) {
+            safeLocation.add(0, 0, i);
+            if (isSafeLocation(safeLocation)) {
+                return safeLocation;
+            }
+            safeLocation.subtract(0, i, 0); // 复原到原始位置
+        }
+
+        // 向右搜索安全地点
+        for (int i = 1; i <= maxHeightOffset; i++) {
+            safeLocation.subtract(i, 0, 0);
+            if (isSafeLocation(safeLocation)) {
+                return safeLocation;
+            }
+            safeLocation.add(0, i, 0); // 复原到原始位置
+        }
+
+        // 如果没有找到安全位置，返回原始位置
+        return originalLocation;
     }
 
     private Location generatePlatformLocation(World world) {
