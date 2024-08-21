@@ -26,7 +26,7 @@ public class FishingListener implements Listener {
     @EventHandler
     public void onPlayerFish(PlayerFishEvent event) {
         Player player = event.getPlayer();
-
+        if (event.getHook().getLocation().getBlock().getType() != Material.WATER) return;
         if (event.getState() == PlayerFishEvent.State.REEL_IN) {
             if (random.nextBoolean()) {
                 Material randomItem = Material.values()[random.nextInt(Material.values().length)];
