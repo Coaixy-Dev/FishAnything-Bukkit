@@ -15,3 +15,8 @@ item-blacklist:
 entity-blacklist:
   - ENDER_DRAGON
   - WITHER
+
+nextPlatformIndex: 0
+
+# 存储玩家的基地信息
+player:
