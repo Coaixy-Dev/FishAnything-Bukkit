@@ -27,7 +27,8 @@ import java.util.Random;
 
 public class WorldGenerate implements Listener {
     private final FishAnything plugin;
-    private final int y = 30;
+    // 平台默认高度
+    private final int y = 10;
 
     public WorldGenerate(FishAnything plugin) {
         this.plugin = plugin;
@@ -36,19 +37,21 @@ public class WorldGenerate implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        // 判断是否首次进入服务器
         if (isFirstJoin(player.getUniqueId().toString())) {
-            player.sendMessage("欢迎加入服务器，这是你第一次加入服务器，正在为你生成平台");
-            // 记录平台ID
+            // 创建新的platformId
             int platformId = plugin.getConfig().getInt("nextPlatformIndex");
             plugin.getConfig().set("nextPlatformIndex", platformId + 1);
             plugin.getConfig().set("player." + player.getUniqueId() + ".platformId", platformId);
+            // 生成平台
             World world = plugin.getServer().getWorld("world");
             if (world == null) return;
             Location platformLocation = generatePlatformLocation(world);
             generatePlatform(platformLocation);
+            // 保存玩家信息
             plugin.getConfig().set("player." + player.getUniqueId() + ".platformX", platformLocation.getX());
             plugin.getConfig().set("player." + player.getUniqueId() + ".platformZ", platformLocation.getZ());
-            player.teleport(platformLocation.add(0, 2, 0));
+            player.teleport(platformLocation.add(1, 4, 1));
             plugin.saveConfig();
         }
     }
@@ -57,12 +60,8 @@ public class WorldGenerate implements Listener {
     public void backPlatform(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
         double x = plugin.getConfig().getDouble("player." + player.getUniqueId() + ".platformX");
-
         double z = plugin.getConfig().getDouble("player." + player.getUniqueId() + ".platformZ");
-
-        player.sendMessage("正在传送回你的平台 " + x + " " + y + " " + z);
-        player.setRespawnLocation(new Location(player.getWorld(), x, y + 2, z));
-
+        // 防止传送失败
         BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {
@@ -73,19 +72,19 @@ public class WorldGenerate implements Listener {
     }
 
     private Location generatePlatformLocation(World world) {
+        int distance = plugin.getConfig().getInt("platformDistance", 30);
         Location spawnLocation = world.getSpawnLocation();
         int x = (int) spawnLocation.getX();
         int z = (int) spawnLocation.getZ();
         Random random = new Random();
         while (new Location(world, x, y, z).getBlock().getType() != Material.AIR) {
             if (random.nextBoolean()) {
-                x += 15;
+                x += distance;
             } else {
-                z += 15;
+                z += distance;
             }
         }
-        Location platformLocation = new Location(world, x, y, z);
-        return platformLocation;
+        return new Location(world, x, y, z);
     }
 
     private void generatePlatform(Location loc) {
