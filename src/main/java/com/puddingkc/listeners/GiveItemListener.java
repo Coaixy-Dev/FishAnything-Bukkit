@@ -51,6 +51,7 @@ public class GiveItemListener implements Listener {
             ItemMeta meta = FishingRod.getItemMeta();
             if (meta != null) {
                 meta.setDisplayName(plugin.getFishingName());
+                meta.setUnbreakable(true);
                 FishingRod.setItemMeta(meta);
             }
             player.getInventory().addItem(FishingRod);
