@@ -19,6 +19,9 @@ entity-blacklist:
   - WITHER
   - WARDEN
 
+# 实体概率
+entity-probability: 30
+
 # 平台间距,即平台与平台之间的距离
 platform_distance: 30
 

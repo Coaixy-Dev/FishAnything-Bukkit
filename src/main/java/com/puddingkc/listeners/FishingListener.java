@@ -28,7 +28,9 @@ public class FishingListener implements Listener {
         Player player = event.getPlayer();
         if (event.getHook().getLocation().getBlock().getType() != Material.WATER) return;
         if (event.getState() == PlayerFishEvent.State.REEL_IN) {
-            if (random.nextBoolean()) {
+            double generateRandom = random.nextInt(100) + 1;
+            double entityProbability = plugin.getConfig().getInt("entity-probability", 30);
+            if (generateRandom >= entityProbability) {
                 Material randomItem = Material.values()[random.nextInt(Material.values().length)];
                 if (!isItemBlacklisted(randomItem)) {
                     ItemStack itemStack = new ItemStack(randomItem);
