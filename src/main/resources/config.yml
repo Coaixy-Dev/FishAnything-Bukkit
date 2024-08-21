@@ -9,13 +9,20 @@ auto-give: true
 item-blacklist:
   - BEDROCK
   - BARRIER
+  - ENDER_DRAGON_SPAWN_EGG
+  - WARDEN_SPAWN_EGG
 
 # 实体黑名单，不能被钓起的实体
 # 实体名称可以在 https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/entity/EntityType.html 查看
 entity-blacklist:
   - ENDER_DRAGON
   - WITHER
+  - WARDEN
 
+# 平台间距,即平台与平台之间的距离
+platform_distance: 30
+
+# 下一个平台的Id，非必要情况下不需要更改
 nextPlatformIndex: 0
 
 # 存储玩家的基地信息
